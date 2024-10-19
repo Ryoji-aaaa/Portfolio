@@ -1,32 +1,31 @@
-const HomePage = () => {
-  return (
-    <>
-      <div id="app">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <span className="index-loading">Loading</span>
-          <p className="index-info">
-            Loadingの表示のままの場合
-            <br />
-            Goolge Chrome{" "}
-            <a target="_blank" href="https://www.google.com/intl/ja_jp/chrome/">
-              最新版
-            </a>
-            をご利用ください。
-          </p>
-        </div>
-      </div>
-      <div>
-        <h1>Welcome to the Home Page</h1>
-      </div>
-    </>
-  );
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+const IndexPage = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            // Replace this with your actual login check logic
+            const isLoggedIn = await fakeLoginCheck();
+
+            if (isLoggedIn) {
+                router.push('/mypage');
+            } else {
+                router.push('/login');
+            }
+        };
+
+        checkLoginStatus();
+    }, [router]);
+
+    // Fake login check function for demonstration purposes
+    const fakeLoginCheck = async () => {
+        // Simulate an API call
+        return new Promise((resolve) => setTimeout(() => resolve(true), 1000));
+    };
+
+    return null;
 };
 
-export default HomePage;
+export default IndexPage;

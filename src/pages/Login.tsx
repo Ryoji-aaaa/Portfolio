@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -17,23 +18,22 @@ const Login = () => {
         localStorage.setItem("LoggedIn", "true");
         router.push("/mypage");
       } else {
-        //alert("メールアドレスまたはパスワードが違います");
+        setErrorMessage("メールアドレスまたはパスワードが違います");
       }
     } else {
-      //alert("アカウントが存在しません");
+      setErrorMessage("アカウントが存在しません");
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setErrorMessage("正しいメールアドレスを入力してください");
+      return;
+    }
+    if (password.length < 6) {
+      setErrorMessage("パスワードは6文字以上にしてください");
+      return;
     }
   };
-
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    // alert("正しいメールアドレスを入力してください");
-    return;
-  }
-  if (password.length < 6) {
-    // alert("パスワードは6文字以上にしてください");
-    return;
-  }
-  
 
   return (
     <div>
@@ -51,6 +51,7 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         <button type="submit">ログイン</button>
       </form>
       <p>
