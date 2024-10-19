@@ -33,6 +33,7 @@ const Login = () => {
     // alert("パスワードは6文字以上にしてください");
     return;
   }
+  
 
   return (
     <div>

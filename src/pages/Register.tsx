@@ -18,6 +18,7 @@ const Register: React.FC = () => {
                     <label>Email:</label>
                     <input
                         type="email"
+                        placeholder="メールアドレス"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -27,6 +28,7 @@ const Register: React.FC = () => {
                     <label>Password:</label>
                     <input
                         type="password"
+                        placeholder="パスワード"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -36,6 +38,7 @@ const Register: React.FC = () => {
                     <label>Confirm Password:</label>
                     <input
                         type="password"
+                        placeholder="確認用パスワード"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
