@@ -57,15 +57,9 @@ const Login = () => {
       <p>
         アカウントをお持ちでない方は
         <button
+          className="underlineURL"
           onClick={() => {
-            /* Add your navigation logic here */
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            color: "blue",
-            textDecoration: "underline",
-            cursor: "pointer",
+            router.push("/register");
           }}
         >
           こちら
