@@ -42,7 +42,7 @@ const Login = () => {
         <p>Guest ユーザーでログインする場合は、</p>
         <p>メールアドレス:abc@example.com</p>
         <p>パスワード:password123</p>
-        </InfoBox>
+      </InfoBox>
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -65,6 +65,17 @@ const Login = () => {
           className="underlineURL"
           onClick={() => {
             router.push("/register");
+          }}
+        >
+          こちら
+        </button>
+      </p>
+      <p>
+        パスワードを忘れた場合は
+        <button
+          className="underlineURL"
+          onClick={() => {
+            router.push("/request-reset");
           }}
         >
           こちら

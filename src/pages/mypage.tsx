@@ -19,8 +19,19 @@ const MyPage = () => {
   return (
     <div>
       <h1>Welcome to My Page</h1>
-      {session && <p>Logged in as {session.user? session.user.email : "session_null"}</p>}
+      {session && <p>Logged in as {session.user ? session.user.email : "session_null"}</p>}
       <button onClick={handleLogout}>Logout</button>
+      <p>
+        パスワードをリセットしたい場合は
+        <button
+          className="underlineURL"
+          onClick={() => {
+            router.push("/request-reset");
+          }}
+        >
+          こちら
+        </button>
+      </p>
     </div>
   );
 };
