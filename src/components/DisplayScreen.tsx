@@ -8,8 +8,11 @@ const DisplayScreen: React.FC = () => {
       <p>メールアドレス: [メールアドレス]</p>
       <p>ID: [予約ID]</p>
       <p>バーコード: [バーコード]</p>
+      <button onClick={() => window.location.href = '/mypage'}>mypageに戻る</button>
     </div>
   );
+    
+
 };
 
 export default DisplayScreen;
