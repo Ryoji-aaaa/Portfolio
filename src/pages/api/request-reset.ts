@@ -12,7 +12,7 @@ interface User {
 const users: User[] = []; // 仮のユーザーリスト。DBに置換予定。(register.tsと同じ)
 const resetTokens = new Map(); // リセットトークンを保存するマップ
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const requestReset = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         const { email } = req.body;
         const user = users.find(user => user.email === email);
@@ -37,13 +37,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             from: 'your-email@gmail.com',
             to: email,
             subject: 'パスワードリセット',
-            text: `以下のリンクをクリックしてパスワードをリセットしてください: http://localhost:3000/reset-password?token=${token}`,
+            text: `パスワードリセットトークン: ${token}`
         };
 
-        await transporter.sendMail(mailOptions);
-
-        res.status(200).json({ message: 'パスワードリセットリンクを送信しました' });
+        try {
+            await transporter.sendMail(mailOptions);
+            res.status(200).json({ message: 'リセットトークンが送信されました' });
+        } catch (error) {
+            res.status(500).json({ message: 'メール送信に失敗しました', error });
+        }
     } else {
-        res.status(405).json({ message: 'Method not allowed' });
+        res.status(405).json({ message: 'メソッドが許可されていません' });
     }
 };
+
+export default requestReset;

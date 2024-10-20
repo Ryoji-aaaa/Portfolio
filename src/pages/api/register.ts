@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 
 const users = []; // 仮のユーザーリスト。DBに置換予定。
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         const { email, password } = req.body;
 
@@ -19,3 +19,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(405).json({ message: 'Method not allowed' });
     }
 };
+
+export default registerHandler;
