@@ -1,24 +1,25 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { useSession, signOut } from "next-auth/react";
 
 const MyPage = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    if (loggedIn !== "true") {
+    if (status === "unauthenticated") {
       router.push("/login");
     }
-  }, [router]);
+  }, [status, router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("loggedIn");
-    router.push("/login");
+    signOut({ callbackUrl: "/login" });
   };
 
   return (
     <div>
       <h1>Welcome to My Page</h1>
+      {session && <p>Logged in as {session.user? session.user.email : "session_null"}</p>}
       <button onClick={handleLogout}>Logout</button>
     </div>
   );

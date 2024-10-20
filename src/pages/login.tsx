@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
+import InfoBox from "@/components/InfoBox";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -7,22 +9,8 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const registeredUsers = localStorage.getItem("user");
-    if (registeredUsers) {
-      const user = JSON.parse(registeredUsers);
-      if (user.email === email && user.password === password) {
-        //alert("ログイン成功");
-        localStorage.setItem("LoggedIn", "true");
-        router.push("/mypage");
-      } else {
-        setErrorMessage("メールアドレスまたはパスワードが違います");
-      }
-    } else {
-      setErrorMessage("アカウントが存在しません");
-    }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
@@ -33,11 +21,28 @@ const Login = () => {
       setErrorMessage("パスワードは6文字以上にしてください");
       return;
     }
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      setErrorMessage("メールアドレスまたはパスワードが違います");
+    } else {
+      router.push("/mypage");
+    }
   };
 
   return (
     <div>
       <h1>ログイン</h1>
+      <InfoBox mode="hint">
+        <p>Guest ユーザーでログインする場合は、</p>
+        <p>メールアドレス:abc@example.com</p>
+        <p>パスワード:password123</p>
+        </InfoBox>
       <form onSubmit={handleLogin}>
         <input
           type="email"
