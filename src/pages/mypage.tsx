@@ -16,10 +16,29 @@ const MyPage = () => {
     signOut({ callbackUrl: "/login" });
   };
 
+  const getUserInfo = () => {
+    if (session) {
+      return {
+        email: session.user?.email,
+        // id: session.user?.id,
+      };
+    }
+    return null;
+  };
+
+  const userInfo = getUserInfo();
+
   return (
     <div>
       <h1>Welcome to My Page</h1>
-      {session && <p>Logged in as {session.user ? session.user.email : "session_null"}</p>}
+      {userInfo ? (
+        <>
+          <p>Logged in as {userInfo.email}</p>
+          {/* <p>User ID: {userInfo.id}</p> */}
+        </>
+      ) : (
+        <p>Loading...</p>
+      )}
       <button onClick={handleLogout}>Logout</button>
       <p>
         パスワードをリセットしたい場合は

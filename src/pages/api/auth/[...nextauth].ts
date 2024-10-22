@@ -1,33 +1,42 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import User from '../../../models/User';
+import bcrypt from 'bcryptjs';
+import connectMongo from '../../../lib/mongodb';
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 export default NextAuth({
-    providers: [
-        CredentialsProvider({
-            name: 'Credentials',
-            credentials: {
-                email: { label: "Email", type: "text" },
-                password: { label: "Password", type: "password" }
-            },
-            async authorize(credentials) {
-                // credentials オブジェクトが存在するか確認
-                if (credentials) {
-                    const { email, password } = credentials;
-                    // ここでユーザー認証を行う
-                    if (email === "abc@example.com" && password === "password123") {
-                        // 認証成功時にユーザーオブジェクトを返す
-                        return { id: "001", name: 'Guest', email: "abc@example.com" };
-                    }
-                }
-                // 認証失敗時には null を返す
-                return null;
-            }
-        })
-    ],
-    callbacks: {
-        session({ session, token, user }) {
-            // セッションコールバックの処理
-            return session;
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        await connectMongo();
+
+        if (!credentials) {
+          return null;
         }
+
+        const { email, password } = credentials;
+        const user = await User.findOne({ email });
+
+        if (user && bcrypt.compareSync(password, user.password)) {
+          return { id: user._id, email: user.email };
+        }
+
+        return null;
+      }
+    })
+  ],
+  callbacks: {
+    async session({ session, token }) {
+      if (token) {
+        // セッションの処理
+        // session.user!.id = token.id;
+      }
+      return session;
     }
+  }
 });

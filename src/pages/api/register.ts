@@ -1,23 +1,36 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-//hash化のためのbcryptをインポート
+import connectMongo from '../../lib/mongodb';
+import User from '../../models/User';
 import bcrypt from 'bcryptjs';
+import { getSession } from 'next-auth/react';
 
-const users = []; // 仮のユーザーリスト。DBに置換予定。
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await connectMongo();
 
-const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method === 'POST') {
-        const { email, password } = req.body;
+  if (req.method === 'POST') {
+    const { email, password } = req.body;
 
-        // パスワードのハッシュ化
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 新しいユーザーをリストに追加
-        users.push({ email, password: hashedPassword });
-
-        res.status(201).json({ message: 'User registered successfully' });
-    } else {
-        res.status(405).json({ message: 'Method not allowed' });
+    // ユーザーが既に存在するか確認
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'このメールアドレスは既に登録されています' });
     }
-};
 
-export default registerHandler;
+    // パスワードをハッシュ化
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // 新しいユーザーを作成
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
+
+    // ユーザー登録が完了したら自動的にログイン
+    const session = await getSession({ req });
+    if (session) {
+      return res.status(201).json({ message: 'ユーザー登録が完了し、ログインしました' });
+    }
+
+    res.status(201).json({ message: 'ユーザー登録が完了しました' });
+  } else {
+    res.status(405).json({ message: 'メソッドが許可されていません' });
+  }
+}
