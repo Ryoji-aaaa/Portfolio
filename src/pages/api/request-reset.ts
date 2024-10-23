@@ -28,13 +28,13 @@ const requestReset = async (req: NextApiRequest, res: NextApiResponse) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'your-email@gmail.com',
-                pass: 'your-email-password',
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD,
             },
         });
 
         const mailOptions = {
-            from: 'your-email@gmail.com',
+            from: process.env.EMAIL_ADDRESS,
             to: email,
             subject: 'パスワードリセット',
             text: `パスワードリセットトークン: ${token}`

@@ -17,30 +17,35 @@ const Register: React.FC = () => {
       return;
     }
 
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      // ユーザー登録が成功したら自動的にログイン
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (result?.error) {
-        setErrorMessage('ログインに失敗しました');
+      if (response.ok) {
+        // ユーザー登録が成功したら自動的にログイン
+        const result = await signIn('credentials', {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (result?.error) {
+          setErrorMessage('ログインに失敗しました');
+        } else {
+          router.push('/mypage');
+        }
       } else {
-        router.push('/mypage');
+        const data = await response.json();
+        setErrorMessage(data.message);
       }
-    } else {
-      const data = await response.json();
-      setErrorMessage(data.message);
+    } catch (error) {
+      console.error('クライアントエラー:', error);
+      setErrorMessage('サーバーに接続できませんでした');
     }
   };
 

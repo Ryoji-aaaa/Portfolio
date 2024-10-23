@@ -17,7 +17,7 @@ export default function InfoBox(props: InfoBoxProps) {
   if (mode === "hint") {
     return (
       <aside className="infobox infobox-hint">
-        <p>{children}</p>
+        <div>{children}</div>
       </aside>
     );
   }
@@ -25,7 +25,7 @@ export default function InfoBox(props: InfoBoxProps) {
   return (
     <aside className={`infobox infobox-warning warning--${severity}`}>
       <h2>Warning</h2>
-      <p>{children}</p>
+      <div>{children}</div>
     </aside>
   );
 }
