@@ -1,42 +1,39 @@
-import User from '../../../models/User';
-import bcrypt from 'bcryptjs';
-import connectMongo from '../../../lib/mongodb';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { MongoClient } from 'mongodb';
+import bcrypt from 'bcryptjs';
+
+const clientPromise = new MongoClient(process.env.MONGODB_URI as string).connect();
 
 export default NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        await connectMongo();
+        const client = await clientPromise;
+        const db = client.db('myFirstDatabase');
+        const usersCollection = db.collection('users');
 
-        if (!credentials) {
-          return null;
+        const user = await usersCollection.findOne({ email: credentials?.email });
+        if (!user) {
+          throw new Error('No user found with the email');
         }
 
-        const { email, password } = credentials;
-        const user = await User.findOne({ email });
-
-        if (user && bcrypt.compareSync(password, user.password)) {
-          return { id: user._id, email: user.email };
+        const isValid = await bcrypt.compare(credentials!.password, user.password);
+        if (!isValid) {
+          throw new Error('Could not log you in');
         }
 
-        return null;
+        return { id: user._id.toString(), email: user.email };
       }
     })
   ],
-  callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        // セッションの処理
-        // session.user!.id = token.id;
-      }
-      return session;
-    }
-  }
+  session: {
+    strategy: 'jwt',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 });
